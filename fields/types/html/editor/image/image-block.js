@@ -1,6 +1,6 @@
 'use strict';
 
-import { AlignedImage } from 'arch-keystone/dist/components/article/index';
+import { AlignedImage } from 'plate-model/dist/components/article/index';
 import _ from 'lodash';
 import AtomicBlockRendererMixin from '../mixins/atomic-block-renderer-mixin';
 import ImageSelector from '../../../../../admin/client/components/ImageSelector';
