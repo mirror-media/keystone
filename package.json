@@ -1,11 +1,11 @@
 {
-  "name": "twreporter-keystone",
+  "name": "arch-keystone",
   "version": "0.5.16",
   "description": "Web Application Framework and Admin GUI / Content Management System built on Express.js and Mongoose",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/twreporter/keystone.git"
+    "url": "https://github.com/mirror-media/keystone.git"
   },
   "dependencies": {
     "async": "1.5.2",
@@ -72,6 +72,7 @@
     "multer": "0.1.8",
     "numeral": "1.5.3",
     "object-assign": "4.0.1",
+    "plate-model": "^1.0.5",
     "precommit-hook": "^3.0.0",
     "qs": "^4.0.0",
     "queryfilter": "0.0.4",
@@ -94,7 +95,6 @@
     "shortid": "^2.2.6",
     "store-prototype": "1.1.1",
     "superagent": "1.7.2",
-    "twreporter-react": "^1.0.5",
     "underscore": "1.8.3",
     "vkey": "1.0.0",
     "watchify": "3.7.0",
@@ -153,7 +153,7 @@
   "readmeFilename": "README.md",
   "gitHead": "ef3fd612285315ea8e12f68da4c8d6031e2c7fe7",
   "bugs": {
-    "url": "https://github.com/twreporter/keystone/issues"
+    "url": "https://github.com/mirror-media/keystone/issues"
   },
   "scripts": {
     "build": "NODE_ENV=production gulp build-packages",
