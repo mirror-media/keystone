@@ -213,18 +213,7 @@ export const EntityButtons = (props) => {
 					/>
 				);
 			case ENTITY.IMAGEDIFF.type:
-				return (
-					<ImageButton
-						active={active}
-						apiPath="images"
-						key={entity}
-						label={entity}
-						onToggle={onToggle}
-						selectionLimit={2}
-						icon="fa-object-ungroup"
-						iconText=" Diff"
-					/>
-				);
+				return;
 			case ENTITY.IMAGELINK.type:
 				return (
 					<ImageLinkButton
