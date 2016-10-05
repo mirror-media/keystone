@@ -46,7 +46,7 @@ let defaultEntityTagMap = {
 	[ENTITY.IMAGELINK.type]: ['<img alt="<%= data.description %>" src="<%= data.url %>" class="<%= data.alignment %>">', '</img>'],
 	[ENTITY.SLIDESHOW.type]: ['<!-- slideshow component start --> <ol class="slideshow-container"> <%  _.forEach(data, function(image) { %><li class="slideshow-slide"><img src="<%- image.url %>" /></li><% }); %>', '</ol><!-- slideshow component end -->'],
 	[ENTITY.IMAGEDIFF.type]: ['<!-- imageDiff component start --> <ol class="image-diff-container"> <% _.forEach(data, function(image, index) { if (index > 1) { return; } %><li class="image-diff-item"><img src="<%- image.url %>" /></li><% }); %>', '</ol><!-- imageDiff component end-->'],
-	[ENTITY.YOUTUBE.type]: ['<iframe width="560" height="315" src="https://www.youtube.com/embed/<%= data.youtubeId %>" frameborder="0" allowfullscreen>', '</iframe>'],
+	[ENTITY.YOUTUBE.type]: ['<iframe width="560" alt="<%= daya.description %>" height="315" src="https://www.youtube.com/embed/<%= data.youtubeId %>" frameborder="0" allowfullscreen>', '</iframe>'],
 };
 
 let nestedTagMap = {
