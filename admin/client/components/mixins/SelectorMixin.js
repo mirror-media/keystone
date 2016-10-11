@@ -11,7 +11,7 @@ let SelectorMixin = (superclass) => class extends superclass {
 
 		// input in the search field
 		this._searchInput = '';
-		this.PAGE_SIZE = 6;
+		this.PAGE_SIZE = 12;
 		this.API = '/api/';
 
 		this.state = {
@@ -78,7 +78,7 @@ let SelectorMixin = (superclass) => class extends superclass {
 	 * @param {limit} [limit=6] - The number of items we want to get
 	 * @return {string} a query string
 	 */
-	_buildFilters (filters = [], page = 0, limit = 6) {
+	_buildFilters (filters = [], page = 0, limit = 12) {
 		let queryString = {
 			limit: limit,
 			skip: page === 0 ? 0 : (page - 1) * limit,
