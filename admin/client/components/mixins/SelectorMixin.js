@@ -67,6 +67,7 @@ let SelectorMixin = (superclass) => class extends superclass {
 		let queryString = {
 			search: input,
 			limit: limit,
+            sort: "-createTime",
 			skip: page === 0 ? 0 : (page - 1) * limit,
 		};
 		return Promise.resolve(qs.stringify(queryString));

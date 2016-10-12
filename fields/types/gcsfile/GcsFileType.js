@@ -251,6 +251,7 @@ gcsfile.prototype.uploadFile = function (item, file, update, callback) {
 			destination: gcsDir + filename,
 			filetype: filetype,
 			isPublicRead: isPublicRead,
+            cacheControl: 'public, max-age=2592000',
 		}).then(function (response) {
 			var fileData = {
 				filename: filename,

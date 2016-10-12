@@ -199,6 +199,7 @@ gcsimages.prototype.uploadFile = function (file) {
 		destination: gcsDir + filename,
 		filetype: filetype,
 		isPublicRead: isPublicRead,
+        cacheControl: 'public, max-age=2592000',
 	}).then(function (response) {
 		return new Promise(function (resolve, reject) {
 			// resizing image and upload resized images
@@ -220,6 +221,7 @@ gcsimages.prototype.uploadFile = function (file) {
 						destination: gcsDir + filenameWithoutExt + '-' + resizeOpt.target + '.' + ext,
 						filetype: filetype,
 						isPublicRead: isPublicRead,
+                        cacheControl: 'public, max-age=2592000',
 					}).then(function (result) {
 						asyncCallback();
 					}, function (err) {

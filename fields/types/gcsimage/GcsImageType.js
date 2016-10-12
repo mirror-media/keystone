@@ -271,6 +271,7 @@ gcsimage.prototype.uploadFile = function (item, file, update, callback) {
 			destination: gcsDir + filename,
 			filetype: filetype,
 			isPublicRead: isPublicRead,
+            cacheControl: 'public, max-age=2592000',
 		}).then(function (apiResponse) {
 				// resizing image and upload resized images
 			if (typeof _this.options.resize === 'function') {
@@ -290,6 +291,7 @@ gcsimage.prototype.uploadFile = function (item, file, update, callback) {
 							destination: gcsDir + filenameWithoutExt + '-' + resizeOpt.target + '.' + ext,
 							filetype: filetype,
 							isPublicRead: isPublicRead,
+                            cacheControl: 'public, max-age=2592000',
 						}));
 					}
 					return Promise.all(promises).then(function (values) {
