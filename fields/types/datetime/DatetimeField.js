@@ -52,7 +52,7 @@ module.exports = Field.create({
 		var datetimeFormat = this.dateInputFormat + ' ' + this.timeInputFormat;
 		this.props.onChange({
 			path: this.props.path,
-			value: this.isValid(value) ? moment(value, datetimeFormat).toISOString() : null,
+            value: this.isValid(value) ? moment(value, datetimeFormat).toISOString() : null,
 		});
 	},
 
@@ -62,8 +62,8 @@ module.exports = Field.create({
 	},
 
 	timeChanged (event) {
-		this.setState({ timeValue: event.target.value });
-		this.handleChange(this.state.dateValue, event.target.value);
+		this.setState({ dateValue: this.refs.dateInput.state.value, timeValue: event.target.value });
+		this.handleChange(this.refs.dateInput.state.value, event.target.value);
 	},
 
 	setNow () {

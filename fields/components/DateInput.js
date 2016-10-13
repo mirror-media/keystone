@@ -52,8 +52,9 @@ module.exports = React.createClass({
 		if (modifiers.selected === true) {
 			return;
 		}
+        let selectedDate = moment(day).format(this.props.format)
 		this.setState({
-			value: moment(day).format(this.props.format),
+			value: selectedDate,
 			month: day,
 		}, () => {
 			setTimeout(() => {
@@ -62,6 +63,8 @@ module.exports = React.createClass({
 				});
 			}, 200);
 		});
+        this.state.dateVale = selectedDate
+        this.state.value = selectedDate
 	},
 	showPicker () {
 		this.setState({ pickerIsOpen: true }, this.showCurrentDate);
