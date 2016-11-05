@@ -39,7 +39,7 @@ let defaultEntityTagMap = {
 	[ENTITY.ANNOTATION.type]: ['<abbr title="<%= data.pureAnnotationText %>"><%= data.text %>', '</abbr>'],
 	[ENTITY.AUDIO.type]: ['<div class="audio-container <%= data.alignment %>"><div class="audio-title"><%= data.title %></div><div class="audio-desc"><%= data.description %></div><audio src="<%= data.url %>" />', '</div>'],
 	[ENTITY.BLOCKQUOTE.type]: ['<blockquote class="<%= data.alignment %>"><div><%= data.quote %></div><div><%= data.quoteBy %></div>', '<blockquote>'],
-	[ENTITY.EMBEDDEDCODE.type]: ['<div class="embedded title="<%= data.caption %>" <%= data.alignment %>"><%= data.embeddedCode%>', '</div>'],
+	[ENTITY.EMBEDDEDCODE.type]: ['<div class="embedded <%= data.alignment %>" title="<%= data.caption %>"><%= data.embeddedCode%>', '</div>'],
 	[ENTITY.INFOBOX.type]: ['<div class="info-box-container <%= data.alignment %>"><div class="info-box-title"><%= data.title %></div><div class="info-box-body"><%= data.body %></div>', '</div>'],
 	[ENTITY.LINK.type]: ['<a target="_blank" href="<%= data.url %>">', '</a>'],
     [ENTITY.IMAGE.type]: ['<img alt="<%= data.description %>" src="<%= data.url %>" srcset="<%= data.mobile.url %> 800w,  <%= data.tablet.url %> 1280w, <%= data.desktop.url %> 2400w" class="<%= data.alignment %>">', '</img>'],     
