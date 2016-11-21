@@ -3,7 +3,7 @@ var DateType = require('../date/DateType');
 var FieldType = require('../Type');
 var util = require('util');
 
-var parseFormats = ['YYYY-MM-DD', 'YYYY-MM-DD h:m:s a', 'YYYY-MM-DD h:m a', 'YYYY-MM-DD H:m:s', 'YYYY-MM-DD H:m'];
+var parseFormats = ['YYYY-MM-DD', 'YYYY-MM-DD h:m:s a', 'YYYY-MM-DD h:m a', 'YYYY-MM-DD H:m:s', 'YYYY-MM-DD H:m', 'YYYY-MM-DD h:m a Z'];
 
 /**
  * DateTime FieldType Constructor
@@ -17,7 +17,7 @@ function datetime (list, path, options) {
 	this._properties = ['formatString', 'isUTC'];
 	this.typeDescription = 'date and time';
 	this.parseFormatString = options.parseFormat || parseFormats;
-	this.formatString = (options.format === false) ? false : (options.format || 'YYYY-MM-DD h:m:s a');
+	this.formatString = (options.format === false) ? false : (options.format || 'YYYY-MM-DD h:m:s a +08:00');
 	this.isUTC = options.utc || false;
 	if (this.formatString && typeof this.formatString !== 'string') {
 		throw new Error('FieldType.DateTime: options.format must be a string.');
@@ -41,7 +41,7 @@ datetime.prototype.parse = DateType.prototype.parse;
  */
 datetime.prototype.getInputFromData = function (data) {
 	if (this.paths.date in data && this.paths.time in data) {
-		return (data[this.paths.date] + ' ' + data[this.paths.time]).trim();
+		return (data[this.paths.date] + ' ' + data[this.paths.time]).trim() + ' +08:00';
 	} else {
 		return data[this.path];
 	}

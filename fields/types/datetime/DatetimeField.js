@@ -15,23 +15,23 @@ module.exports = Field.create({
 	timeInputFormat: 'h:mm:ss a',
 
 	// parse formats (duplicated from lib/fieldTypes/datetime.js)
-	parseFormats: ['YYYY-MM-DD', 'YYYY-MM-DD h:m:s a', 'YYYY-MM-DD h:m a', 'YYYY-MM-DD H:m:s', 'YYYY-MM-DD H:m'],
+	parseFormats: ['YYYY-MM-DD', 'YYYY-MM-DD h:m:s a', 'YYYY-MM-DD h:m a', 'YYYY-MM-DD H:m:s', 'YYYY-MM-DD H:m', 'YYYY-MM-DD h:m:s a Z'],
 
 	getInitialState () {
 		return {
-			dateValue: this.props.value && this.moment(this.props.value).format(this.dateInputFormat),
-			timeValue: this.props.value && this.moment(this.props.value).format(this.timeInputFormat),
+			dateValue: this.props.value && this.moment(this.props.value).utcOffset(8).format(this.dateInputFormat),
+			timeValue: this.props.value && this.moment(this.props.value).utcOffset(8).format(this.timeInputFormat),
 		};
 	},
 
 	getDefaultProps () {
 		return {
-			formatString: 'Do MMM YYYY, h:mm:ss a',
+			formatString: 'Do MMM YYYY, h:mm:ss a Z',
 		};
 	},
 
 	moment (value) {
-		var m = moment(value);
+		var m = moment(value).utcOffset(8);
 		if (this.props.isUTC) m.utc();
 		return m;
 	},
