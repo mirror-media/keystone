@@ -58,7 +58,6 @@ module.exports = function (req, res) {
 				});
 
 				var appName = keystone.get('name') || 'Keystone';
-
 				keystone.render(req, res, 'item', {
 					section: keystone.nav.by.list[req.list.key] || {},
 					title: appName + ': ' + req.list.singular + ': ' + req.list.getDocumentName(item),
@@ -67,6 +66,7 @@ module.exports = function (req, res) {
 					item: item,
 					relationships: relationships,
 					showRelationships: showRelationships,
+					userId: req.user.id,
 				});
 
 			});

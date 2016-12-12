@@ -14,6 +14,7 @@ module.exports = function (req, res) {
 			title: appName + ': ' + req.list.plural,
 			page: 'list',
 			list: req.list,
+			userId: req.user.id,
 			submitted: req.body || {},
 		}));
 	};

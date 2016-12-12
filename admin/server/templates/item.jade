@@ -75,6 +75,9 @@ html
 //- 		else
 //- 			+column_basic(value)
 //-
+//-		if user
+//-			input(type='hidden', name='userId', value=user.id)
+//-
 //- mixin column_link(value, href, newWindow)
 //- 	if value
 //- 		a(href=href, target=newWindow ? '_blank' : undefined)= value
