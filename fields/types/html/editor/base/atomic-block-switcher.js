@@ -12,6 +12,7 @@ import ImageDiffBlock from '../image-diff/image-diff-block';
 import InfoBoxBlock from '../info-box/info-box-block';
 import React from 'react';
 import SlideshowBlock from '../slideshow/slideshow-block';
+import VideoBlock from '../video/video-block';
 import YoutubeBlock from '../youtube/youtube-block';
 import Wrapper from './block-wrapper';
 import classNames from 'classnames';
@@ -79,6 +80,14 @@ class AtomicBlockSwitcher extends React.Component {
 		switch (type) {
 			case ENTITY.AUDIO.type:
 				BlockComponent = AudioBlock;
+				if (device === 'mobile') {
+					style = mobileStyle;
+				} else {
+					style = tabletMinStyle;
+				}
+				break;
+			case ENTITY.VIDEO.type:
+				BlockComponent = VideoBlock;
 				if (device === 'mobile') {
 					style = mobileStyle;
 				} else {

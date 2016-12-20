@@ -112,7 +112,7 @@ module.exports = Field.create({
         }
         return getDefaultKeyBinding(e);
     },
-    
+
 	toggleBlockType (blockType) {
 		let editorState = this.state.editorState;
 		this.onChange(
@@ -168,6 +168,14 @@ module.exports = Field.create({
 		this._toggleAtomicBlock(entity, audio);
 	},
 
+	_toggleVideo (entity, value) {
+		const video = Array.isArray(value) ? value[0] : null;
+		if (!video) {
+			return;
+		}
+		this._toggleAtomicBlock(entity, video);
+	},
+
 	_toggleInlineEntity (entity, value) {
 		const entityKey = Entity.create(entity, 'IMMUTABLE', value);
 		this._toggleTextWithEntity(entityKey, _.get(value, 'text'));
@@ -202,6 +210,8 @@ module.exports = Field.create({
 		switch (entity) {
 			case ENTITY.AUDIO.type:
 				return this._toggleAudio(entity, value);
+			case ENTITY.VIDEO.type:
+				return this._toggleVideo(entity, value);
 			case ENTITY.BLOCKQUOTE.type:
 			case ENTITY.IMAGELINK.type:
 			case ENTITY.INFOBOX.type:
@@ -381,4 +391,3 @@ var INLINE_STYLES = [
 	{ label: 'Underline', style: 'UNDERLINE', icon: 'fa-underline', text: '' },
 	{ label: 'Monospace', style: 'CODE', icon: 'fa-terminal', text: '' },
 ];
-
