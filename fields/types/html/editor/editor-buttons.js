@@ -12,6 +12,7 @@ import ImageLinkButton from './image-link/image-link-bt';
 import InfoBoxBt from './info-box/info-box-bt';
 import LinkButton from './link/link-button';
 import React from 'react';
+import VideoButton from './video/video-bt';
 import YoutubeBt from './youtube/youtube-bt';
 
 class StyleButton extends React.Component {
@@ -146,6 +147,18 @@ export const EntityButtons = (props) => {
 						onToggle={onToggle}
 						icon="fa-file-audio-o"
 						iconText=" Audio"
+					/>
+				);
+			case ENTITY.VIDEO.type:
+				return (
+					<VideoButton
+						active={active}
+						apiPath="videos"
+						key={entity}
+						label={entity}
+						onToggle={onToggle}
+						icon="fa-file-video-o"
+						iconText=" Video"
 					/>
 				);
 			case ENTITY.BLOCKQUOTE.type:
