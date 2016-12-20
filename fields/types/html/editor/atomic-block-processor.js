@@ -25,11 +25,11 @@ const processor = {
 				content = Array.isArray(content) ? content : [content];
 				break;
 			case ENTITY.AUDIO.type:
-			case ENTITY.VIDEO.type:
 			case ENTITY.IMAGE.type:
+			case ENTITY.IMAGEDIFF.type:
 			case ENTITY.INFOBOX.type:
 			case ENTITY.SLIDESHOW.type:
-			case ENTITY.IMAGEDIFF.type:
+			case ENTITY.VIDEO.type:
 			case ENTITY.YOUTUBE.type:
 				alignment = entity.data && entity.data.alignment || alignment;
 				content = _.get(entity, 'data');

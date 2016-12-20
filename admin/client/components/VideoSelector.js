@@ -1,12 +1,12 @@
 'use strict';
-import { parseVideoAPIResponse, parseImageAPIResponse } from '../../../lib/parseAPIResponse';
 import { Button, Modal, Pagination } from 'elemental';
+import { parseVideoAPIResponse, parseImageAPIResponse } from '../../../lib/parseAPIResponse';
 import _ from 'lodash';
 import qs from 'qs';
-import xhr from 'xhr';
-import VideoSelection from './VideoSelection';
-import SelectorMixin from './mixins/SelectorMixin';
 import React from 'react';
+import SelectorMixin from './mixins/SelectorMixin';
+import VideoSelection from './VideoSelection';
+import xhr from 'xhr';
 
 const PAGINATION_LIMIT = 10;
 
