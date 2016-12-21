@@ -72,7 +72,7 @@
     "multer": "0.1.8",
     "numeral": "1.5.3",
     "object-assign": "4.0.1",
-    "plate-model": "^1.0.15",
+    "plate-model": "^1.0.16",
     "precommit-hook": "^3.0.0",
     "qs": "^4.0.0",
     "queryfilter": "0.0.4",
