@@ -46,7 +46,7 @@ let defaultEntityTagMap = {
   [ENTITY.IMAGELINK.type]: ['<img alt="<%= data.description %>" src="<%= data.url %>" class="<%= data.alignment %>">', '</img>'],
 	[ENTITY.LINK.type]: ['<a target="_blank" href="<%= data.url %>">', '</a>'],
   [ENTITY.SLIDESHOW.type]: ['<!-- slideshow component start --> <ol class="slideshow-container"> <%  _.forEach(data, function(image) { %><li class="slideshow-slide"><img alt="<%- image.description %>" src="<%- image.url %>" srcset="<%= image.mobile.url %> 800w,  <%= image.tablet.url %> 1280w, <%= image.desktop.url %> 2400w" /></li><% }); %>', '</ol><!-- slideshow component end -->'],
-	[ENTITY.VIDEO.type]: ['<div class="video-container <%= data.alignment %>"><div class="video-title"><%= data.title %></div><div class="video-desc"><%= data.description %></div><video src="<%= data.url %>" />', '</div>'],
+	[ENTITY.VIDEO.type]: ['<div controls class="video-container <%= data.alignment %>"><div class="video-title"><%= data.title %></div><div class="video-desc"><%= data.description %></div><video src="<%= data.url %>" />', '</div>'],
 	[ENTITY.YOUTUBE.type]: ['<iframe width="560" alt="<%= data.description %>" height="315" src="https://www.youtube.com/embed/<%= data.youtubeId %>" frameborder="0" allowfullscreen>', '</iframe>'],
 };
 
