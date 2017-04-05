@@ -267,7 +267,23 @@ gcsfile.prototype.uploadFile = function (item, file, update, callback) {
 			}
 			return callback(null, fileData);
 		}).catch(function (err) {
-			return callback(err);
+			console.error('UPLOADING ERROR:', err);
+			bucket.deleteFiles({
+				prefix: gcsDir + filenameWithoutExt,
+			}, function (deleteErr) {
+				if (deleteErr) {
+					return callback(deleteErr);
+				}
+				callback(err);
+			});
+		}).then(function () {
+			// delete local file
+			console.log('DELETE LOCAL FILE:', file.path);
+			try {
+				fs.unlinkSync(file.path);
+			} catch (err) {
+				console.error('DELETE LOCAL FILE ERROR:', err);
+			};
 		});
 	};
 
