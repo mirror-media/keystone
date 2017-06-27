@@ -8,12 +8,24 @@ import AltText from './AltText';
 import FooterBar from './FooterBar';
 import InvalidFieldType from './InvalidFieldType';
 import { Button, Col, Form, FormField, FormInput, ResponsiveText, Row } from 'elemental';
+import xhr from 'xhr';
+import _ from 'lodash';
 
 function upCase (str) {
 	return str.slice(0, 1).toUpperCase() + str.substr(1).toLowerCase();
 };
 
 var EditForm = React.createClass({
+  componentDidMount () {
+    if (Keystone.editorController) {
+      window.onpagehide = () => {
+        this.props.toggleLockerForEditing({ isEditing: false });
+      };
+      window.onunload = () => {
+        this.props.toggleLockerForEditing({ isEditing: false });
+      };
+    }
+  },
 	displayName: 'EditForm',
 	propTypes: {
 		data: React.PropTypes.object,
@@ -33,9 +45,8 @@ var EditForm = React.createClass({
 		props.mode = 'edit';
 		return props;
 	},
-	handleChange (event) {
+  handleChange (event) {
 		let values = Object.assign({}, this.state.values);
-
 		values[event.path] = event.value;
 		this.setState({ values });
 	},
@@ -82,7 +93,14 @@ var EditForm = React.createClass({
 		const input = findDOMNode(this.refs.keyOrIdInput);
 		input.select();
 	},
-	removeConfirmationDialog () {
+  handleSave () {
+    const formElement = document.querySelector('form.EditForm-container');
+    if (Keystone.notifyBeforeLeave) {
+      window.onbeforeunload = null;
+    }
+    formElement.submit();
+  },
+  removeConfirmationDialog () {
 		this.setState({
 			confirmationDialog: null,
 		});
@@ -184,10 +202,10 @@ var EditForm = React.createClass({
 	},
 	renderFooterBar () {
 		var buttons = [
-			<Button key="save" type="primary" submit>Save</Button>,
+			<Button key="save" type="primary" onClick={ this.handleSave }>Save</Button>,
 		];
 		buttons.push(
-			<Button key="reset" onClick={this.confirmReset} type="link-cancel">
+			<Button key="reset" onClick={this.handleReset} type="link-cancel">
 				<ResponsiveText hiddenXS="reset changes" visibleXS="reset" />
 			</Button>
 		);
@@ -263,6 +281,16 @@ var EditForm = React.createClass({
 		) : null;
 	},
 	render () {
+    if (Keystone.editorController && !this.state.lastUpdatedData) {
+      const fields = {
+        action: 'updateItem',
+        currEditorId:  _.get(Keystone.user, [ 'id' ], ''),
+        currEditor: _.get(Keystone.user, [ 'name' ], ''),
+        isEditing: true,
+      };
+      this.setState({ lastUpdatedData: fields});
+      this.props.toggleLockerForEditing(fields);
+    }
 		return (
 			<form method="post" encType="multipart/form-data" className="EditForm-container">
 				<Row>

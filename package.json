@@ -175,8 +175,7 @@
     "clean": "rimraf ./coverage",
     "validate": "npm ls"
   },
-  "pre-commit": [
-  ],
+  "pre-commit": [],
   "engines": {
     "node": ">= 0.10.28",
     "npm": ">= 1.4.9"
