@@ -142,18 +142,37 @@ class AudioGrid extends React.Component {
 			const isSelected = selectedAudios.find((element) => {
 				return element.id === audio.id;
 			}) ? true : false;
-			return (
-				<AudioItem
-					audio={_.get(audio, 'url')}
-					coverPhoto={_.get(audio, 'coverPhoto')}
-					description={_.get(audio, 'description')}
-					isSelected={isSelected}
-					key={audio.id}
-					onSelect={this._handleSelect.bind(this, audio)}
-					title={_.get(audio, 'title')}
-					width={width}
-				/>
-			);
+
+      const fileType = _.get(audio, [ 'filetype' ], '');
+      if (fileType.indexOf('audio') === 0) {
+        return (
+          <AudioItem
+            audio={_.get(audio, 'url')}
+            coverPhoto={_.get(audio, 'coverPhoto')}
+            description={_.get(audio, 'description')}
+            isSelected={isSelected}
+            key={audio.id}
+            onSelect={this._handleSelect.bind(this, audio)}
+            title={_.get(audio, 'title')}
+            width={width}
+          />
+        );
+      } else {
+        let style = {
+          border: isSelected ? '1px solid' : '',
+          boxSizing: 'border-box',
+          display: 'inline-block',
+          padding: '10px',
+          width: `${width}%`,
+        };
+        return (
+          <div style={style}>
+            <div style={{ fontWeight: 'bold' }}>File: {_.get(audio, 'title')}</div>
+            <div>{_.get(audio, 'description')}</div>
+            <div style={{ color: 'red' }}>NOTICE: This file is not a legal audio.</div>
+          </div>
+        );
+      }
 		});
 
 		return (
