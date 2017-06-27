@@ -8,7 +8,6 @@ import AltText from './AltText';
 import FooterBar from './FooterBar';
 import InvalidFieldType from './InvalidFieldType';
 import { Button, Col, Form, FormField, FormInput, ResponsiveText, Row } from 'elemental';
-import getFormData from 'get-form-data';
 import xhr from 'xhr';
 import _ from 'lodash';
 
@@ -38,11 +37,6 @@ var EditForm = React.createClass({
 			confirmationDialog: null,
 		};
 	},
-  getFormData () {
-    const formElement = document.querySelector('form.EditForm-container');
-    const formData = new FormData(formElement);
-    return getFormData(formElement);    
-  },
 	getFieldProps (field) {
 		var props = Object.assign({}, field);
 		props.value = this.state.values[field.path];
@@ -100,38 +94,11 @@ var EditForm = React.createClass({
 		input.select();
 	},
   handleSave () {
-    this.props.updateStatus(true);
-    const data = this.getFormData();
-    const adminPath = Keystone.adminPath;
-    const itemId = Keystone.itemId;
-    const routePath = _.get(this.props, [ 'list', 'path' ], '');
-    const currEditor = _.get(Keystone.user, [ 'name' ], '');
-    const currEditorId = _.get(Keystone.user, [ 'id' ], '');
-
-    xhr({
-      method: 'post',
-      body: JSON.stringify(Object.assign({}, data, { isEditing: true, currEditor: currEditor, currEditorId: currEditorId })),
-      uri: `${adminPath}/${routePath}/${itemId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }, (e, res, body) => {
-      this.props.updateStatus(false);
-      if (!e) {
-        console.log('Item data have been successfully saved.');
-        this.setState({ 
-          lastUpdatedData: Object.assign({}, data, { isEditing: true, currEditor: currEditor, currEditorId: currEditorId })
-        });
-        this.props.refreshMessages({
-          success: [ 'Your changes have been saved.' ]
-        });
-      } else {
-        console.log('Item data saved in fail.');
-        this.props.refreshMessages({
-          error: [ 'Your changes have been saved. in fail.' ]
-        });
-      }
-    });
+    const formElement = document.querySelector('form.EditForm-container');
+    if (Keystone.notifyBeforeLeave) {
+      window.onbeforeunload = null;
+    }
+    formElement.submit();
   },
   removeConfirmationDialog () {
 		this.setState({

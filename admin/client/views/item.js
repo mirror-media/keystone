@@ -87,12 +87,6 @@ var ItemView = React.createClass({
 			createIsOpen: visible,
 		});
 	},
-  updateMessages (msg) {
-    console.log('update msg')
-    this.setState({
-      messages: msg
-    });
-  },
   updateStatus (updating) {
     this.setState({
       updating: updating
@@ -140,8 +134,7 @@ var ItemView = React.createClass({
     } else {
       this.setUpNotifyBeforeLeave();
     }
-    console.log(this.props.messages)
-    console.log(this.state.messages)
+
 		return (
 			<div className="keystone-wrapper">
 				<header className="keystone-header">
@@ -173,11 +166,10 @@ var ItemView = React.createClass({
 							isOpen={this.state.createIsOpen}
 							onCancel={() => this.toggleCreate(false)} />
 						<FlashMessages
-							messages={this.state.messages} />
+							messages={this.props.messages} />
 						<EditForm
 							list={this.props.list}
 							data={this.state.itemData}
-              refreshMessages={this.updateMessages}
               toggleLockerForEditing={this.toggleLockerForEditing}
               updateStatus={this.updateStatus} />
 						{this.renderRelationships()}
