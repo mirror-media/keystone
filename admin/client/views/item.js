@@ -11,6 +11,8 @@ import PrimaryNavigation from '../components/PrimaryNavigation';
 import RelatedItemsList from '../components/RelatedItemsList';
 import SecondaryNavigation from '../components/SecondaryNavigation';
 import { Container, Spinner } from 'elemental';
+import _ from 'lodash';
+import xhr from 'xhr';
 
 var ItemView = React.createClass({
 	displayName: 'ItemView',
@@ -32,13 +34,78 @@ var ItemView = React.createClass({
 				return;
 			}
 			this.setState({ itemData });
+      this.setState({ messages: Keystone.messages });
+      this.props.itemData = itemData;
 		});
 	},
+  extractRequiredData (fields) {
+    const requireds = _.map(_.filter(fields, (o) => {
+      return _.get(o, [ 'required' ], false)
+    }), (o) => (o.path))
+    return requireds
+  },
+  toggleLockerForEditing (fields) {
+    const adminPath = _.get(this.props, [ 'adminPath' ], '/');
+    const routePath = _.get(this.props, [ 'list', 'path' ], '');
+    const itemId = this.props.itemId;
+    const requireds = this.extractRequiredData(_.get(this.props.list, [ 'fields' ], {}));
+    let reqbody = {};
+    // _.map(requireds, (fieldName) => {
+    //   reqbody[ fieldName ] = _.get(this.state, [ 'itemData', 'fields', fieldName ])
+    // })
+    reqbody[ 'action' ] = 'updateItem';
+    reqbody[ Keystone.csrf.key ] = Keystone.csrf.value;
+
+    xhr({
+      method: 'post',
+      body: JSON.stringify(Object.assign({}, reqbody, fields)),
+      uri: `${adminPath}/${routePath}/${this.props.itemId}`,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (e, res, body) => {
+      if (!e) {
+        console.log('Successfuly toggling locker.');
+      } else {
+        console.log('Toggling locker in fail.');
+      }
+    });
+  },
+  setUpNotifyBeforeLeave () {
+    if (Keystone.notifyBeforeLeave) {
+      window.onbeforeunload = function (e) {
+        e = e || window.event;
+        if (e) {
+          e.returnValue = 'You are about to leave this page. Are you sure?';
+        }
+        return 'You are about to leave this page. Are you sure?';
+      };
+    }
+  },
 	toggleCreate (visible) {
 		this.setState({
 			createIsOpen: visible,
 		});
 	},
+  updateMessages (msg) {
+    console.log('update msg')
+    this.setState({
+      messages: msg
+    });
+  },
+  updateStatus (updating) {
+    this.setState({
+      updating: updating
+    });
+  },
+  redirectPageBack () {
+    const adminPath = _.get(this.props, [ 'adminPath' ], '/');
+    const routePath = _.get(this.props, [ 'list', 'path' ], '');
+    setTimeout(() => {
+      window.location = `${adminPath}/${routePath}`;
+    }, 3000)
+    return `${adminPath}/${routePath}`;
+  },
 	renderRelationships () {
 		let { relationships } = this.props.list;
 		let keys = Object.keys(relationships);
@@ -55,7 +122,26 @@ var ItemView = React.createClass({
 		);
 	},
 	render () {
-		if (!this.state.itemData) return <div className="view-loading-indicator"><Spinner size="md" /></div>;
+		if (!this.state.itemData || this.props.updating) return <div className="view-loading-indicator"><Spinner size="md" /></div>;
+    if (Keystone.editorController) {
+      let isEditing =  _.get(this.state.itemData, [ 'fields', 'isEditing' ], false);
+      let currEditor = _.get(this.state.itemData, [ 'fields', 'currEditor' ], '');
+      let currEditorId = _.get(this.state.itemData, [ 'fields', 'currEditorId' ], '');
+      let thisUserId = _.get(this.props, [ 'user', 'id' ], '');
+
+      if (isEditing === true && currEditorId !== thisUserId) {
+        const backPage = this.redirectPageBack();
+        return <div className="view-loading-indicator">
+          <FlashMessages messages={{ warning: [ `This item is being edited by ${currEditor}, please try again later. This page will be redirect to ${backPage} in 3 seconds.` ] }} />
+        </div>
+      } else {
+        this.setUpNotifyBeforeLeave();
+      }
+    } else {
+      this.setUpNotifyBeforeLeave();
+    }
+    console.log(this.props.messages)
+    console.log(this.state.messages)
 		return (
 			<div className="keystone-wrapper">
 				<header className="keystone-header">
@@ -87,10 +173,13 @@ var ItemView = React.createClass({
 							isOpen={this.state.createIsOpen}
 							onCancel={() => this.toggleCreate(false)} />
 						<FlashMessages
-							messages={this.props.messages} />
+							messages={this.state.messages} />
 						<EditForm
 							list={this.props.list}
-							data={this.state.itemData} />
+							data={this.state.itemData}
+              refreshMessages={this.updateMessages}
+              toggleLockerForEditing={this.toggleLockerForEditing}
+              updateStatus={this.updateStatus} />
 						{this.renderRelationships()}
 					</Container>
 				</div>
@@ -119,6 +208,10 @@ ReactDOM.render(
 		User={Keystone.User}
 		user={Keystone.user}
 		version={Keystone.version}
+    adminPath={Keystone.adminPath}
+    lists={Keystone.lists}
+    itemData={{}}
+    updating={false}
 	/>,
 	document.getElementById('item-view')
 );

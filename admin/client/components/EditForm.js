@@ -8,12 +8,25 @@ import AltText from './AltText';
 import FooterBar from './FooterBar';
 import InvalidFieldType from './InvalidFieldType';
 import { Button, Col, Form, FormField, FormInput, ResponsiveText, Row } from 'elemental';
+import getFormData from 'get-form-data';
+import xhr from 'xhr';
+import _ from 'lodash';
 
 function upCase (str) {
 	return str.slice(0, 1).toUpperCase() + str.substr(1).toLowerCase();
 };
 
 var EditForm = React.createClass({
+  componentDidMount () {
+    if (Keystone.editorController) {
+      window.onpagehide = () => {
+        this.props.toggleLockerForEditing({ isEditing: false });
+      };
+      window.onunload = () => {
+        this.props.toggleLockerForEditing({ isEditing: false });
+      };
+    }
+  },
 	displayName: 'EditForm',
 	propTypes: {
 		data: React.PropTypes.object,
@@ -25,6 +38,11 @@ var EditForm = React.createClass({
 			confirmationDialog: null,
 		};
 	},
+  getFormData () {
+    const formElement = document.querySelector('form.EditForm-container');
+    const formData = new FormData(formElement);
+    return getFormData(formElement);    
+  },
 	getFieldProps (field) {
 		var props = Object.assign({}, field);
 		props.value = this.state.values[field.path];
@@ -33,9 +51,8 @@ var EditForm = React.createClass({
 		props.mode = 'edit';
 		return props;
 	},
-	handleChange (event) {
+  handleChange (event) {
 		let values = Object.assign({}, this.state.values);
-
 		values[event.path] = event.value;
 		this.setState({ values });
 	},
@@ -82,7 +99,41 @@ var EditForm = React.createClass({
 		const input = findDOMNode(this.refs.keyOrIdInput);
 		input.select();
 	},
-	removeConfirmationDialog () {
+  handleSave () {
+    this.props.updateStatus(true);
+    const data = this.getFormData();
+    const adminPath = Keystone.adminPath;
+    const itemId = Keystone.itemId;
+    const routePath = _.get(this.props, [ 'list', 'path' ], '');
+    const currEditor = _.get(Keystone.user, [ 'name' ], '');
+    const currEditorId = _.get(Keystone.user, [ 'id' ], '');
+
+    xhr({
+      method: 'post',
+      body: JSON.stringify(Object.assign({}, data, { isEditing: true, currEditor: currEditor, currEditorId: currEditorId })),
+      uri: `${adminPath}/${routePath}/${itemId}`,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (e, res, body) => {
+      this.props.updateStatus(false);
+      if (!e) {
+        console.log('Item data have been successfully saved.');
+        this.setState({ 
+          lastUpdatedData: Object.assign({}, data, { isEditing: true, currEditor: currEditor, currEditorId: currEditorId })
+        });
+        this.props.refreshMessages({
+          success: [ 'Your changes have been saved.' ]
+        });
+      } else {
+        console.log('Item data saved in fail.');
+        this.props.refreshMessages({
+          error: [ 'Your changes have been saved. in fail.' ]
+        });
+      }
+    });
+  },
+  removeConfirmationDialog () {
 		this.setState({
 			confirmationDialog: null,
 		});
@@ -184,10 +235,10 @@ var EditForm = React.createClass({
 	},
 	renderFooterBar () {
 		var buttons = [
-			<Button key="save" type="primary" submit>Save</Button>,
+			<Button key="save" type="primary" onClick={ this.handleSave }>Save</Button>,
 		];
 		buttons.push(
-			<Button key="reset" onClick={this.confirmReset} type="link-cancel">
+			<Button key="reset" onClick={this.handleReset} type="link-cancel">
 				<ResponsiveText hiddenXS="reset changes" visibleXS="reset" />
 			</Button>
 		);
@@ -263,6 +314,16 @@ var EditForm = React.createClass({
 		) : null;
 	},
 	render () {
+    if (Keystone.editorController && !this.state.lastUpdatedData) {
+      const fields = {
+        action: 'updateItem',
+        currEditorId:  _.get(Keystone.user, [ 'id' ], ''),
+        currEditor: _.get(Keystone.user, [ 'name' ], ''),
+        isEditing: true,
+      };
+      this.setState({ lastUpdatedData: fields});
+      this.props.toggleLockerForEditing(fields);
+    }
 		return (
 			<form method="post" encType="multipart/form-data" className="EditForm-container">
 				<Row>
