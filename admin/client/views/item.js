@@ -44,7 +44,7 @@ var ItemView = React.createClass({
     }), (o) => (o.path))
     return requireds
   },
-  toggleLockerForEditing (fields) {
+  toggleLockerForEditing (fields, callback) {
     const adminPath = _.get(this.props, [ 'adminPath' ], '/');
     const routePath = _.get(this.props, [ 'list', 'path' ], '');
     const itemId = this.props.itemId;
@@ -66,6 +66,7 @@ var ItemView = React.createClass({
     }, (e, res, body) => {
       if (!e) {
         console.log('Successfuly toggling locker.');
+        callback && callback()
       } else {
         console.log('Toggling locker in fail.');
       }
