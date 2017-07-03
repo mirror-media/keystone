@@ -108,6 +108,9 @@ var EditForm = React.createClass({
 		this.setState({ confirmationDialog });
 	},
 	handleReset () {
+		if (Keystone.notifyBeforeLeave) {
+		  window.onbeforeunload = null;
+		}
 		window.location.reload();
 	},
 	confirmDelete () {
@@ -124,6 +127,9 @@ var EditForm = React.createClass({
 	},
 	handleDelete () {
 		let { data, list } = this.props;
+		if (Keystone.notifyBeforeLeave) {
+		  window.onbeforeunload = null;
+		}
 		list.deleteItem(data.id, err => {
 			if (err) {
 				console.error(`Problem deleting ${list.singular}: ${data.name}`);
@@ -249,7 +255,7 @@ var EditForm = React.createClass({
 			<Button key="save" type="primary" onClick={ this.handleSave }>Save</Button>,
 		];
 		buttons.push(
-			<Button key="reset" onClick={this.handleReset} type="link-cancel">
+			<Button key="reset" onClick={this.confirmReset} type="link-cancel">
 				<ResponsiveText hiddenXS="reset changes" visibleXS="reset" />
 			</Button>
 		);
