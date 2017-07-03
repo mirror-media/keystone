@@ -18,6 +18,32 @@ function upCase (str) {
 var EditForm = React.createClass({
   componentDidMount () {
     if (Keystone.editorController) {
+      document.addEventListener('click', (evt) => {
+        const e = evt || window.event;
+        const targ = e.target;
+        const _handler = (href) => {
+          const confirmationDialog = (
+            <ConfirmationDialog
+              isOpen
+              body={'You are about to leave this page. Are you sure?'}
+              confirmationLabel="Leave"
+              onCancel={this.removeConfirmationDialog}
+              onConfirmation={this.handleLeave}
+            />
+          );
+          event.preventDefault();
+          this.setState({ leaveFor: href });
+          this.setState({ confirmationDialog });
+        }
+        if (targ.tagName.indexOf('A') === 0) {
+          _handler(targ.getAttribute('href'))
+        } else {
+          const realNode = this.isDescendant('A', targ)
+          if (realNode) {
+            _handler(realNode.getAttribute('href'))
+          }
+        }
+      })
       window.onpagehide = () => {
         this.props.toggleLockerForEditing({ isEditing: false });
       };
@@ -50,6 +76,24 @@ var EditForm = React.createClass({
 		values[event.path] = event.value;
 		this.setState({ values });
 	},
+  handleLeave () {
+    if (Keystone.notifyBeforeLeave) {
+      window.onbeforeunload = null;
+    }
+    this.props.toggleLockerForEditing({ isEditing: false }, () => {
+      window.location = this.state.leaveFor;
+    });
+  },
+  isDescendant(parentTag, child) {
+     let node = child.parentNode;
+     while (node !== null) {
+         if (node.tagName === parentTag) {
+             return node;
+         }
+         node = node.parentNode;
+     }
+     return false;
+  },
 	confirmReset (event) {
 		const confirmationDialog = (
 			<ConfirmationDialog
@@ -64,6 +108,9 @@ var EditForm = React.createClass({
 		this.setState({ confirmationDialog });
 	},
 	handleReset () {
+		if (Keystone.notifyBeforeLeave) {
+		  window.onbeforeunload = null;
+		}
 		window.location.reload();
 	},
 	confirmDelete () {
@@ -80,6 +127,9 @@ var EditForm = React.createClass({
 	},
 	handleDelete () {
 		let { data, list } = this.props;
+		if (Keystone.notifyBeforeLeave) {
+		  window.onbeforeunload = null;
+		}
 		list.deleteItem(data.id, err => {
 			if (err) {
 				console.error(`Problem deleting ${list.singular}: ${data.name}`);
@@ -205,7 +255,7 @@ var EditForm = React.createClass({
 			<Button key="save" type="primary" onClick={ this.handleSave }>Save</Button>,
 		];
 		buttons.push(
-			<Button key="reset" onClick={this.handleReset} type="link-cancel">
+			<Button key="reset" onClick={this.confirmReset} type="link-cancel">
 				<ResponsiveText hiddenXS="reset changes" visibleXS="reset" />
 			</Button>
 		);
