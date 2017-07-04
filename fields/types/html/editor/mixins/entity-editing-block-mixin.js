@@ -3,6 +3,7 @@ import { Button, FormField, FormInput, Modal } from 'elemental';
 import { Editor, EditorState, Entity, Modifier, RichUtils, convertFromRaw } from 'draft-js';
 import { BlockStyleButtons, EntityButtons, InlineStyleButtons } from '../editor-buttons';
 import ENTITY from '../entities';
+import FlashMessages from '../../../../../admin/client/components/FlashMessages';
 import React, { Component } from 'react';
 import blockStyleFn from '../base/block-style-fn';
 import decorator from '../entity-decorator';
@@ -137,11 +138,20 @@ let EntityEditingBlock = (superclass) => class extends Component {
 			return this._renderDraftjsEditingField(this.state.editorState);
 		}
 		let onChange = this._handleEditingFieldChange.bind(this, field);
-		return (
-			<FormField label={field} htmlFor={'form-input-' + field} key={field}>
-				<FormInput type={type} multiline={type === 'textarea' ? true : false} placeholder={'Enter ' + field} name={'form-input-' + field} onChange={onChange} defaultValue={value}/>
-			</FormField>
-		);
+    if (field !== 'url') {
+      return (
+        <FormField label={field} htmlFor={'form-input-' + field} key={field}>
+          <FormInput type={type} multiline={type === 'textarea' ? true : false} placeholder={'Enter ' + field} name={'form-input-' + field} onChange={onChange} defaultValue={value}/>
+        </FormField>
+      );
+    } else {
+      return (
+        <FormField label={field} htmlFor={'form-input-' + field} key={field}>
+          <FlashMessages messages={this.state.urlMsg} />        
+          <FormInput type={type} multiline={type === 'textarea' ? true : false} placeholder={'Enter ' + field} name={'form-input-' + field} onChange={onChange} defaultValue={value}/>
+        </FormField>
+      );      
+    }
 	}
 
 	_renderEditingFields (fields) {
@@ -187,6 +197,7 @@ let EntityEditingBlock = (superclass) => class extends Component {
 	}
 
 	_toggleModal () {
+    this.setState({ urlMsg: {} })
 		this.props.toggleModal();
 	}
 
@@ -219,6 +230,7 @@ let EntityEditingBlock = (superclass) => class extends Component {
 			<Modal isOpen={this.props.isModalOpen} onCancel={this.toggleModal} backdropClosesModal>
 				<Modal.Header text={'Insert ' + this.props.label} showCloseButton onClose={this.toggleModal} />
 				<Modal.Body>
+          <FlashMessages messages={this.props.messages} />
 					{this._renderEditingFields(this.state.editingFields)}
 				</Modal.Body>
 				<Modal.Footer>
