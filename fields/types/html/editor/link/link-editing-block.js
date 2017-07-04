@@ -1,4 +1,5 @@
 'use strict';
+import _ from 'lodash';
 import EntityEditingBlockMixin from '../mixins/entity-editing-block-mixin';
 import React from 'react';
 
@@ -33,6 +34,24 @@ class LinkEditingBlock extends EntityEditingBlockMixin(React.Component) {
 			url: fields.url.value,
 		};
 	}
+
+  // overwrite
+  _handleSave () {
+    const url = _.trimStart(_.get(this._editingFields, [ 'url', 'value' ]));
+    if (!url || (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0 && url.indexOf('mailto:') !== 0)) {
+      this.setState({
+        urlMsg: { warning: [ 'The url must start with \"http://\", \"https://\" or \"mailto:\".' ] }
+      })
+    } else {
+      this.setState({
+        editingFields: this._editingFields,
+        urlMsg: {},
+      }, () => {
+        this.props.toggleModal();
+        this.props.onToggle(this._decomposeEditingFields(this._editingFields));
+      });
+    }
+  }
 };
 
 LinkEditingBlock.displayName = 'LinkEditingBlock';
