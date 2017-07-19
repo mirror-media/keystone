@@ -10,6 +10,7 @@ import InvalidFieldType from './InvalidFieldType';
 import { Button, Col, Form, FormField, FormInput, ResponsiveText, Row } from 'elemental';
 import xhr from 'xhr';
 import _ from 'lodash';
+import getFormData from 'get-form-data';
 
 function upCase (str) {
 	return str.slice(0, 1).toUpperCase() + str.substr(1).toLowerCase();
@@ -45,10 +46,10 @@ var EditForm = React.createClass({
         }
       })
       window.onpagehide = () => {
-        this.props.toggleLockerForEditing({ isEditing: false });
+        this.handleLeave()
       };
       window.onunload = () => {
-        this.props.toggleLockerForEditing({ isEditing: false });
+        this.handleLeave()
       };
     }
   },
@@ -80,7 +81,10 @@ var EditForm = React.createClass({
     if (Keystone.notifyBeforeLeave) {
       window.onbeforeunload = null;
     }
-    this.props.toggleLockerForEditing({ isEditing: false }, () => {
+    const fields = Object.assign({}, this.state.lastUpdatedData, {
+      isEditing: false,
+    });
+    this.props.toggleLockerForEditing(fields, () => {
       window.location = this.state.leaveFor;
     });
   },
@@ -148,6 +152,8 @@ var EditForm = React.createClass({
     if (Keystone.notifyBeforeLeave) {
       window.onbeforeunload = null;
     }
+    window.onpagehide = null;
+    window.onunload = null;
     formElement.submit();
   },
   removeConfirmationDialog () {
@@ -329,20 +335,24 @@ var EditForm = React.createClass({
 				{elements}
 			</div>
 		) : null;
-	},
-	render () {
+  },
+  doToggleLocker () {
     if (Keystone.editorController && !this.state.lastUpdatedData) {
-      const fields = {
-        action: 'updateItem',
+      const form = document.querySelector('.EditForm-container')
+      if (!form) { return }
+      const reqbody = getFormData(form)
+      const fields = Object.assign({}, reqbody, {
         currEditorId:  _.get(Keystone.user, [ 'id' ], ''),
         currEditor: _.get(Keystone.user, [ 'name' ], ''),
         isEditing: true,
-      };
+      });
       this.setState({ lastUpdatedData: fields});
       this.props.toggleLockerForEditing(fields);
     }
+  },
+	render () {
 		return (
-			<form method="post" encType="multipart/form-data" className="EditForm-container">
+			<form method="post" encType="multipart/form-data" className="EditForm-container" onLoad={ this.doToggleLocker }>
 				<Row>
 					<Col lg="3/4">
 						<Form type="horizontal" className="EditForm" component="div">
