@@ -38,27 +38,14 @@ var ItemView = React.createClass({
       this.props.itemData = itemData;
 		});
 	},
-  extractRequiredData (fields) {
-    const requireds = _.map(_.filter(fields, (o) => {
-      return _.get(o, [ 'required' ], false)
-    }), (o) => (o.path))
-    return requireds
-  },
   toggleLockerForEditing (fields, callback) {
     const adminPath = _.get(this.props, [ 'adminPath' ], '/');
     const routePath = _.get(this.props, [ 'list', 'path' ], '');
     const itemId = this.props.itemId;
-    const requireds = this.extractRequiredData(_.get(this.props.list, [ 'fields' ], {}));
-    let reqbody = {};
-    // _.map(requireds, (fieldName) => {
-    //   reqbody[ fieldName ] = _.get(this.state, [ 'itemData', 'fields', fieldName ])
-    // })
-    reqbody[ 'action' ] = 'updateItem';
-    reqbody[ Keystone.csrf.key ] = Keystone.csrf.value;
 
     xhr({
       method: 'post',
-      body: JSON.stringify(Object.assign({}, reqbody, fields)),
+      body: JSON.stringify(Object.assign({}, fields)),
       uri: `${adminPath}/${routePath}/${this.props.itemId}`,
       headers: {
         'Content-Type': 'application/json'
@@ -98,7 +85,7 @@ var ItemView = React.createClass({
     const routePath = _.get(this.props, [ 'list', 'path' ], '');
     setTimeout(() => {
       window.location = `${adminPath}/${routePath}`;
-    }, 3000)
+    }, 5000)
     return `${adminPath}/${routePath}`;
   },
 	renderRelationships () {
@@ -123,11 +110,12 @@ var ItemView = React.createClass({
       let currEditor = _.get(this.state.itemData, [ 'fields', 'currEditor' ], '');
       let currEditorId = _.get(this.state.itemData, [ 'fields', 'currEditorId' ], '');
       let thisUserId = _.get(this.props, [ 'user', 'id' ], '');
+      let thisUserRole = _.get(this.props, [ 'user', 'role' ])
 
-      if (isEditing === true && currEditorId !== thisUserId) {
+      if (isEditing === true && currEditorId !== thisUserId && thisUserRole !== 'admin') {
         const backPage = this.redirectPageBack();
         return <div className="view-loading-indicator">
-          <FlashMessages messages={{ warning: [ `This item is being edited by ${currEditor}, please try again later. This page will be redirect to ${backPage} in 3 seconds.` ] }} />
+          <FlashMessages messages={{ warning: [ `This item is being edited by ${currEditor}, please try again later. This page will be redirect to ${backPage} in 5 seconds.` ] }} />
         </div>
       } else {
         this.setUpNotifyBeforeLeave();
