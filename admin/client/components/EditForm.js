@@ -30,7 +30,7 @@ function keyboard (keyCode) {
       key.isDown = true;
       key.isUp = false;
     }
-    event.preventDefault();
+    // event.preventDefault();
   };
 
   //The `upHandler`
@@ -40,7 +40,7 @@ function keyboard (keyCode) {
       key.isDown = false;
       key.isUp = true;
     }
-    event.preventDefault();
+    // event.preventDefault();
   };
 
   //Attach event listeners
@@ -395,12 +395,17 @@ var EditForm = React.createClass({
   doToggleLocker () {
     if (Keystone.editorController && !this.state.lastUpdatedData) {
       const form = document.querySelector('.EditForm-container')
+      const dtNow = new Date();
+      const dtDate = `${dtNow.getUTCFullYear()}-${dtNow.getUTCMonth() + 1}-${dtNow.getUTCDate()}`
+      const dtTime = `${dtNow.getUTCHours()}:${dtNow.getUTCMinutes()}:${dtNow.getSeconds()}`
       if (!form) { return }
       const reqbody = getFormData(form)
       const fields = Object.assign({}, reqbody, {
         currEditorId:  _.get(Keystone.user, [ 'id' ], ''),
         currEditor: _.get(Keystone.user, [ 'name' ], ''),
         isEditing: true,
+        editingLockStart_date: dtDate,
+        editingLockStart_time: dtTime
       });
       this.setState({ lastUpdatedData: fields});
       this.props.toggleLockerForEditing(fields);

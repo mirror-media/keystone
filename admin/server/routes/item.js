@@ -79,7 +79,7 @@ module.exports = function (req, res) {
 				console.error('CSRF failure', req.method, req.body);
 				req.flash('error', 'There was a problem with your request, please try again.');
 				return renderView();
-			}
+      }
 
       item.getUpdateHandler(req).process(req.body, { flashErrors: true, logErrors: true }, function (err) {
 				if (err) {
