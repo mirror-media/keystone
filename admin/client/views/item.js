@@ -35,7 +35,6 @@ var ItemView = React.createClass({
 			}
 			this.setState({ itemData });
       this.setState({ messages: Keystone.messages });
-      this.props.itemData = itemData;
 		});
 	},
   toggleLockerForEditing (fields, callback) {
