@@ -1,16 +1,17 @@
-import React from 'react';
+import _ from 'lodash';
+import { Button, Col, Form, FormField, FormInput, ResponsiveText, Row } from 'elemental';
 import { findDOMNode } from 'react-dom';
-import moment from 'moment';
+import AltText from './AltText';
 import ConfirmationDialog from './ConfirmationDialog';
 import Fields from '../fields';
-import FormHeading from './FormHeading';
-import AltText from './AltText';
 import FooterBar from './FooterBar';
+import FormHeading from './FormHeading';
 import InvalidFieldType from './InvalidFieldType';
-import { Button, Col, Form, FormField, FormInput, ResponsiveText, Row } from 'elemental';
-import xhr from 'xhr';
-import _ from 'lodash';
+import Preview from './Preview'
+import React from 'react';
 import getFormData from 'get-form-data';
+import moment from 'moment';
+import xhr from 'xhr';
 
 function upCase (str) {
 	return str.slice(0, 1).toUpperCase() + str.substr(1).toLowerCase();
@@ -119,7 +120,7 @@ var EditForm = React.createClass({
 			values: Object.assign({}, this.props.data.fields),
 			confirmationDialog: null,
 		};
-	},
+  },
 	getFieldProps (field) {
 		var props = Object.assign({}, field);
 		props.value = this.state.values[field.path];
@@ -212,9 +213,19 @@ var EditForm = React.createClass({
     window.onunload = null;
     formElement.submit();
   },
+  handlePreview () {
+    this.setState({
+			preview: true,
+		});
+  },
   removeConfirmationDialog () {
 		this.setState({
 			confirmationDialog: null,
+		});
+  },
+  removePreviewer () {
+		this.setState({
+			preview: false,
 		});
 	},
 	renderKeyOrId () {
@@ -313,9 +324,13 @@ var EditForm = React.createClass({
 		}, this);
 	},
 	renderFooterBar () {
-		var buttons = [
-			<Button key="save" type="primary" onClick={ this.handleSave }>Save</Button>,
-		];
+    const buttons = [];
+    if (Keystone.preview) {
+      buttons.push(
+        <Button key="preview" type="primary" onClick={ this.handlePreview } style={{ marginRight: '5px' }}>Preview</Button>
+      );
+    }
+    buttons.push(<Button key="save" type="primary" onClick={ this.handleSave }>Save</Button>)
 		buttons.push(
 			<Button key="reset" onClick={this.confirmReset} type="link-cancel">
 				<ResponsiveText hiddenXS="reset changes" visibleXS="reset" />
@@ -429,6 +444,11 @@ var EditForm = React.createClass({
 				</Row>
 				{this.renderFooterBar()}
 				{this.state.confirmationDialog}
+        <Preview
+          isOpen={this.state.preview}
+          onCancel={this.removePreviewer}
+          previewId={_.get(this.props.data, [ Keystone.previewId ])}
+        />
 			</form>
 		);
 	},
