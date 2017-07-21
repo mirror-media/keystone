@@ -214,9 +214,14 @@ var EditForm = React.createClass({
     formElement.submit();
   },
   handlePreview () {
-    this.setState({
-			preview: true,
-		});
+    const previewer = (
+      <Preview
+        isOpen={true}
+        onCancel={this.removePreviewer}
+        previewId={_.get(this.props.data, [ Keystone.previewId ])}
+      />
+    );
+    this.setState({ previewer });
   },
   removeConfirmationDialog () {
 		this.setState({
@@ -225,7 +230,7 @@ var EditForm = React.createClass({
   },
   removePreviewer () {
 		this.setState({
-			preview: false,
+			previewer: null,
 		});
 	},
 	renderKeyOrId () {
@@ -444,11 +449,7 @@ var EditForm = React.createClass({
 				</Row>
 				{this.renderFooterBar()}
 				{this.state.confirmationDialog}
-        <Preview
-          isOpen={this.state.preview}
-          onCancel={this.removePreviewer}
-          previewId={_.get(this.props.data, [ Keystone.previewId ])}
-        />
+        {this.state.previewer}
 			</form>
 		);
 	},
