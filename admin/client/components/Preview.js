@@ -14,7 +14,7 @@ class Preview extends Component {
         <ModalHeader text={ headerText } showCloseButton onClose={onCancel} />
         <ModalBody style={{ marginLeft: '0', marginRight: '0', paddingLeft: '0', paddingRight: '0' }}>
           <div style={{ height: '70vh' }}>
-            <iframe src={this.restructTarg(Keystone.preview) + previewId}
+            <iframe src={this.restructTarg(Keystone.preview) + previewId + '?preview=true'}
               width="100%" height='100%' frameborder="0"
               style={{ 
                 width: '1px', minWidth: '100%', '*width': '100%' ,
