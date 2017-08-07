@@ -26,6 +26,8 @@ html
 			Keystone.wysiwyg = { options: !{JSON.stringify(wysiwygOptions)} };
 			Keystone.itemId = '!{item.id}';
 			Keystone.editorController = !{JSON.stringify(list.editorController) || false};
+			Keystone.currEditor = !{JSON.stringify(currEditor) || ''}
+			Keystone.isEditing = !{JSON.stringify(isEditing) || false}
 			Keystone.notifyBeforeLeave = !{JSON.stringify(list.notifyBeforeLeave) || false};
 			Keystone.preview = !{JSON.stringify(list.preview) || false};
 			Keystone.previewId = !{JSON.stringify(list.previewId) || false};      

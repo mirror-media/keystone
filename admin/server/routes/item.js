@@ -1,6 +1,7 @@
 var keystone = require('../../../');
 var _ = require('underscore');
 var async = require('async');
+var cache = require('memory-cache');
 
 module.exports = function (req, res) {
 
@@ -58,6 +59,18 @@ module.exports = function (req, res) {
 				});
 
 				var appName = keystone.get('name') || 'Keystone';
+
+				var currEditorId = cache.get(item.id + '-id') || ''
+				var currEditorNm = cache.get(item.id + '-name') || ''
+				if (!currEditorId && req.list.editorController) {
+					cache.put(item.id + '-id', req.user.id, (req.list.editorControllerTtl || 600000), function(key, value) {
+					  currEditorId = req.user.id
+					});
+					cache.put(item.id + '-name', req.user.name, (req.list.editorControllerTtl || 600000), function(key, value) {
+					  currEditorNm = req.user.name
+					});
+				}
+
 				keystone.render(req, res, 'item', {
 					section: keystone.nav.by.list[req.list.key] || {},
 					title: appName + ': ' + req.list.singular + ': ' + req.list.getDocumentName(item),
@@ -67,6 +80,8 @@ module.exports = function (req, res) {
 					relationships: relationships,
 					showRelationships: showRelationships,
 					userId: req.user.id,
+					currEditor: currEditorNm,
+					isEditing: currEditorId.length > 0 && currEditorId !== req.user.id
 				});
 
 			});
