@@ -37,27 +37,6 @@ var ItemView = React.createClass({
       this.setState({ messages: Keystone.messages });
 		});
 	},
-  toggleLockerForEditing (fields, callback) {
-    const adminPath = _.get(this.props, [ 'adminPath' ], '/');
-    const routePath = _.get(this.props, [ 'list', 'path' ], '');
-    const itemId = this.props.itemId;
-
-    xhr({
-      method: 'post',
-      body: JSON.stringify(Object.assign({}, fields)),
-      uri: `${adminPath}/${routePath}/${this.props.itemId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }, (e, res, body) => {
-      if (!e) {
-        console.log('Successfuly toggling locker.');
-        callback && callback()
-      } else {
-        console.log('Toggling locker in fail.');
-      }
-    });
-  },
   setUpNotifyBeforeLeave () {
     if (Keystone.notifyBeforeLeave) {
       window.onbeforeunload = function (e) {
@@ -105,13 +84,10 @@ var ItemView = React.createClass({
 	render () {
 		if (!this.state.itemData || this.props.updating) return <div className="view-loading-indicator"><Spinner size="md" /></div>;
     if (Keystone.editorController) {
-      let isEditing =  _.get(this.state.itemData, [ 'fields', 'isEditing' ], false);
-      let currEditor = _.get(this.state.itemData, [ 'fields', 'currEditor' ], '');
-      let currEditorId = _.get(this.state.itemData, [ 'fields', 'currEditorId' ], '');
-      let thisUserId = _.get(this.props, [ 'user', 'id' ], '');
+      let isEditing =  _.get(Keystone, [ 'isEditing' ], false);
+      let currEditor = _.get(Keystone, [ 'currEditor' ], '');
       let thisUserRole = _.get(this.props, [ 'user', 'role' ])
-
-      if (isEditing === true && currEditorId !== thisUserId && thisUserRole !== 'admin') {
+      if (isEditing === true && thisUserRole !== 'admin') {
         const backPage = this.redirectPageBack();
         return <div className="view-loading-indicator">
           <FlashMessages messages={{ warning: [ `This item is being edited by ${currEditor}, please try again later. This page will be redirect to ${backPage} in 5 seconds.` ] }} />
@@ -157,9 +133,7 @@ var ItemView = React.createClass({
 							messages={this.props.messages} />
 						<EditForm
 							list={this.props.list}
-							data={this.state.itemData}
-              toggleLockerForEditing={this.toggleLockerForEditing}
-              updateStatus={this.updateStatus} />
+							data={this.state.itemData} />
 						{this.renderRelationships()}
 					</Container>
 				</div>

@@ -17,99 +17,7 @@ function upCase (str) {
 	return str.slice(0, 1).toUpperCase() + str.substr(1).toLowerCase();
 };
 
-function keyboard (keyCode) {
-  const key = {};
-  key.code = keyCode;
-  key.isDown = false;
-  key.isUp = true;
-  key.press = undefined;
-  key.release = undefined;
-  //The `downHandler`
-  key.downHandler = function(event) {
-    if (event.keyCode === key.code) {
-      if (key.isUp && key.press) key.press();
-      key.isDown = true;
-      key.isUp = false;
-    }
-    // event.preventDefault();
-  };
-
-  //The `upHandler`
-  key.upHandler = function(event) {
-    if (event.keyCode === key.code) {
-      if (key.isDown && key.release) key.release();
-      key.isDown = false;
-      key.isUp = true;
-    }
-    // event.preventDefault();
-  };
-
-  //Attach event listeners
-  window.addEventListener(
-    'keydown', key.downHandler.bind(key), false
-  );
-  window.addEventListener(
-    'keyup', key.upHandler.bind(key), false
-  );
-  return key;
-}
-
 var EditForm = React.createClass({
-  componentDidMount () {
-    if (Keystone.editorController) {
-      const keyCtrls = [
-        keyboard(224),
-        keyboard(17),
-        keyboard(91),
-        keyboard(93)
-      ];
-      const isKeyCtrlsPressed = [ false, false, false, false ];
-      _.map(keyCtrls, (o, i) => {
-        o.press = () => {
-          isKeyCtrlsPressed[i] = true
-        }
-        o.release = () => {
-          isKeyCtrlsPressed[i] = false
-        }        
-      })
-           
-      document.addEventListener('click', (evt) => {
-        const e = evt || window.event;
-        const targ = e.target;
-        const _handler = (href) => {
-          const confirmationDialog = (
-            <ConfirmationDialog
-              isOpen
-              body={'You are about to leave this page. Are you sure?'}
-              confirmationLabel="Leave"
-              onCancel={this.removeConfirmationDialog}
-              onConfirmation={this.handleLeave}
-            />
-          );
-          if (_.filter(isKeyCtrlsPressed, (i) => (i)).length === 0) {
-            event.preventDefault();
-            this.setState({ leaveFor: href });
-            this.setState({ confirmationDialog });
-          }     
-        }
-
-        if (targ.tagName.indexOf('A') === 0) {
-          _handler(targ.getAttribute('href'))
-        } else {
-          const realNode = this.isDescendant('A', targ)
-          if (realNode) {
-            _handler(realNode.getAttribute('href'))
-          }
-        }
-      })
-      window.onpagehide = () => {
-        this.handleLeave()
-      };
-      window.onunload = () => {
-        this.handleLeave()
-      };
-    }
-  },
 	displayName: 'EditForm',
 	propTypes: {
 		data: React.PropTypes.object,
@@ -134,27 +42,6 @@ var EditForm = React.createClass({
 		values[event.path] = event.value;
 		this.setState({ values });
 	},
-  handleLeave () {
-    if (Keystone.notifyBeforeLeave) {
-      window.onbeforeunload = null;
-    }
-    const fields = Object.assign({}, this.state.lastUpdatedData, {
-      isEditing: false,
-    });
-    this.props.toggleLockerForEditing(fields, () => {
-      window.location = this.state.leaveFor;
-    });
-  },
-  isDescendant(parentTag, child) {
-     let node = child.parentNode;
-     while (node !== null) {
-         if (node.tagName === parentTag) {
-             return node;
-         }
-         node = node.parentNode;
-     }
-     return false;
-  },
 	confirmReset (event) {
 		const confirmationDialog = (
 			<ConfirmationDialog
@@ -209,8 +96,6 @@ var EditForm = React.createClass({
     if (Keystone.notifyBeforeLeave) {
       window.onbeforeunload = null;
     }
-    window.onpagehide = null;
-    window.onunload = null;
     formElement.submit();
   },
   handlePreview () {
@@ -412,28 +297,9 @@ var EditForm = React.createClass({
 			</div>
 		) : null;
   },
-  doToggleLocker () {
-    if (Keystone.editorController && !this.state.lastUpdatedData) {
-      const form = document.querySelector('.EditForm-container')
-      const dtNow = new Date();
-      const dtDate = `${dtNow.getUTCFullYear()}-${dtNow.getUTCMonth() + 1}-${dtNow.getUTCDate()}`
-      const dtTime = `${dtNow.getUTCHours()}:${dtNow.getUTCMinutes()}:${dtNow.getSeconds()}`
-      if (!form) { return }
-      const reqbody = getFormData(form)
-      const fields = Object.assign({}, reqbody, {
-        currEditorId:  _.get(Keystone.user, [ 'id' ], ''),
-        currEditor: _.get(Keystone.user, [ 'name' ], ''),
-        isEditing: true,
-        editingLockStart_date: dtDate,
-        editingLockStart_time: dtTime
-      });
-      this.setState({ lastUpdatedData: fields});
-      this.props.toggleLockerForEditing(fields);
-    }
-  },
 	render () {
 		return (
-			<form method="post" encType="multipart/form-data" className="EditForm-container" onLoad={ this.doToggleLocker }>
+			<form method="post" encType="multipart/form-data" className="EditForm-container">
 				<Row>
 					<Col lg="3/4">
 						<Form type="horizontal" className="EditForm" component="div">
