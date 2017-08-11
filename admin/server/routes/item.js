@@ -62,7 +62,7 @@ module.exports = function (req, res) {
 
 				var currEditorId = cache.get(item.id + '-id') || ''
 				var currEditorNm = cache.get(item.id + '-name') || ''
-				if (!currEditorId && req.list.editorController) {
+				if (!currEditorId && req.list.editorController && req.user.role !== 'admin') {
 					cache.put(item.id + '-id', req.user.id, (req.list.editorControllerTtl || 600000), function(key, value) {
 					  currEditorId = req.user.id
 					});
