@@ -3,7 +3,7 @@ var DateType = require('../date/DateType');
 var FieldType = require('../Type');
 var util = require('util');
 
-var parseFormats = ['YYYY-MM-DD', 'YYYY-MM-DD h:m:s a', 'YYYY-MM-DD h:m a', 'YYYY-MM-DD H:m:s', 'YYYY-MM-DD H:m', 'YYYY-MM-DD h:m a Z'];
+var parseFormats = ['YYYY-MM-DD', 'YYYY-MM-DD h:m:s a', 'YYYY-MM-DD h:m a', 'YYYY-MM-DD H:m:s', 'YYYY-MM-DD H:m', 'YYYY-MM-DD h:m a Z', 'YYYY-MM-DD h:m:s a Z'];
 
 /**
  * DateTime FieldType Constructor
