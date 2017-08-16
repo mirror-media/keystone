@@ -36,7 +36,28 @@ var ItemView = React.createClass({
 			this.setState({ itemData });
       this.setState({ messages: Keystone.messages });
 		});
-	},
+  },
+  unlockEditorController ({ fields = {}, callback }) {
+    const adminPath = _.get(this.props, [ 'adminPath' ], '/'); 
+    const routePath = _.get(this.props, [ 'list', 'path' ], ''); 
+    xhr({ 
+      method: 'post', 
+      body: JSON.stringify(Object.assign({
+        action: 'leaveEditor'
+      }, fields)), 
+      uri: `${adminPath}/${routePath}/${this.props.itemId}`, 
+      headers: { 
+        'Content-Type': 'application/json' 
+      } 
+    }, (e, res, body) => { 
+      if (!e) { 
+        console.log('Successfully leaving page.'); 
+        callback && callback() 
+      } else { 
+        console.log('Leaving page in fail.'); 
+      } 
+    }); 
+  },
   setUpNotifyBeforeLeave () {
     if (Keystone.notifyBeforeLeave) {
       window.onbeforeunload = function (e) {
@@ -133,6 +154,7 @@ var ItemView = React.createClass({
 							messages={this.props.messages} />
 						<EditForm
 							list={this.props.list}
+              unlockEditorController={this.unlockEditorController}
 							data={this.state.itemData} />
 						{this.renderRelationships()}
 					</Container>

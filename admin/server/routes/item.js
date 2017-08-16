@@ -61,14 +61,13 @@ module.exports = function (req, res) {
 				var appName = keystone.get('name') || 'Keystone';
 
 				var currEditorId = cache.get(item.id + '-id') || ''
-				var currEditorNm = cache.get(item.id + '-name') || ''
-				if (!currEditorId && req.list.editorController && req.user.role !== 'admin') {
-					cache.put(item.id + '-id', req.user.id, (req.list.editorControllerTtl || 600000), function(key, value) {
-					  currEditorId = req.user.id
-					});
-					cache.put(item.id + '-name', req.user.name, (req.list.editorControllerTtl || 600000), function(key, value) {
-					  currEditorNm = req.user.name
-					});
+        var currEditorNm = cache.get(item.id + '-name') || ''
+
+        if (!currEditorId && req.list.editorController && req.user.role !== 'admin') {
+					cache.put(item.id + '-id', req.user.id, (req.list.editorControllerTtl || 600000));
+          cache.put(item.id + '-name', req.user.name, (req.list.editorControllerTtl || 600000));
+          currEditorId = req.user.id;
+          currEditorNm = req.user.name;
 				}
 
 				keystone.render(req, res, 'item', {
@@ -104,9 +103,15 @@ module.exports = function (req, res) {
 				req.flash('success', 'Your changes have been saved.');
 				return res.redirect('/' + keystone.get('admin path') + '/' + req.list.path + '/' + item.id);
 			});
-
-
-		} else {
+		} else if (req.method === 'POST' && req.body.action === 'leaveEditor' && !req.list.get('noedit')) {      
+      var currEditorId = cache.get(item.id + '-id')
+      var currEditorNm = cache.get(item.id + '-name')
+      if (req.user.id === currEditorId) {
+        cache.del(item.id + '-id')
+        cache.del(item.id + '-name')
+      }
+      return res.send('Successfully leaving.')
+    } else {
 			renderView();
 		}
 
