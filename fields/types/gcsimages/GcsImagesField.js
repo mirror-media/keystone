@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Field from '../Field';
-import { Button, FormField, FormInput, FormNote } from 'elemental';
+import { Button, Checkbox, FormField, FormInput, FormNote } from 'elemental';
 import classnames from 'classnames';
 
 const SUPPORTED_TYPES = ['image/gif', 'image/png', 'image/jpeg', 'image/bmp', 'image/x-icon', 'application/pdf', 'image/x-tiff', 'image/x-tiff', 'application/postscript', 'image/vnd.adobe.photoshop', 'image/svg+xml'];
@@ -180,13 +180,13 @@ module.exports = Field.create({
 		var clearFilesButton;
 		if (this.hasFiles()) {
 			clearFilesButton = <Button type="link-cancel" onClick={this.clearFiles} className="ml-5">Clear selection</Button>;
-		}
+    }
 
 		return (
 			<div className="images-toolbar">
 				<div className="u-float-left">
 					<Button onClick={this.changeImage}>Upload Images</Button>
-					{clearFilesButton}
+          {clearFilesButton}
 				</div>
 				{body}
 			</div>
