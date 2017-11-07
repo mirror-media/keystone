@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Field from '../Field';
 import Select from 'react-select';
-import { Button, FormField, FormInput, FormNote } from 'elemental';
+import { Button, Checkbox, FormField, FormInput, FormNote } from 'elemental';
 import Lightbox from '../../../admin/client/components/Lightbox';
 import classnames from 'classnames';
 
@@ -63,8 +63,8 @@ module.exports = Field.create({
 
 	changeImage () {
 		this.fileFieldNode().click();
-	},
-
+  },
+  
 	getImageSource () {
 		if (this.hasLocal()) {
 			return this.state.localSource;
@@ -90,7 +90,8 @@ module.exports = Field.create({
 			removeExisting: false,
 			localSource: null,
 			origin: false,
-			action: null,
+      action: null,
+      isFilechanged: false,
 		});
 	},
 
@@ -99,7 +100,6 @@ module.exports = Field.create({
 	 */
 	fileChanged (event) {
 		var self = this;
-
 		if (window.FileReader) {
 			var files = event.target.files;
 			Array.prototype.forEach.call(files, function (f) {
@@ -111,11 +111,12 @@ module.exports = Field.create({
 
 				var fileReader = new FileReader();
 				fileReader.onload = function (e) {
-					if (!self.isMounted()) return;
+          if (!self.isMounted()) return;
 					self.setState({
-						localSource: e.target.result,
-						origin: 'local',
-					});
+            localSource: e.target.result,
+            origin: 'local',
+            isFilechanged: true
+          });
 				};
 				fileReader.readAsDataURL(f);
 			});
@@ -314,13 +315,16 @@ module.exports = Field.create({
 	},
 
 	renderImageToolbar () {
+    var isWatermarked = <Checkbox label="Want it be watermarked?" name="watermark" onClick={this.changeIsWatermark} />;
+
 		return (
 			<div key={this.props.path + '_toolbar'} className="image-toolbar">
 				<div className="u-float-left">
 					<Button onClick={this.changeImage}>
 						{this.hasImage() ? 'Change' : 'Upload'} Image
 					</Button>
-					{this.hasImage() && this.renderClearButton()}
+          {this.hasImage() && this.renderClearButton()}
+          {this.hasImage() && this.state.isFilechanged && isWatermarked}
 				</div>
 				{this.props.select && this.renderImageSelect()}
 			</div>
@@ -390,7 +394,6 @@ module.exports = Field.create({
 				self.setState({ selectedCloudinaryImage: null });
 			}
 		};
-
 		return (
 			<div className="image-select">
 				<Select.Async
