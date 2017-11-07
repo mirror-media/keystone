@@ -238,7 +238,7 @@ gcsimage.prototype.updateItem = function (item, data, callback) { // eslint-disa
 	 * @api public
 	 */
 
-gcsimage.prototype.uploadFile = function (item, file, update, callback) {
+gcsimage.prototype.uploadFile = function (item, file, isWatermarked, update, callback) {
 	var _this = this;
 	var gcsDir = this.options.destination ? this.options.destination : '';
 	var isPublicRead = _this.options.publicRead ? _this.options.publicRead : false;
@@ -248,8 +248,8 @@ gcsimage.prototype.uploadFile = function (item, file, update, callback) {
 	var filenameWithoutExt = split[0];
 	var ext = split[1] || '';
 	var originalname = file.originalname;
-	var filetype = file.mimetype || file.type;
-
+  var filetype = file.mimetype || file.type;
+  
 	if (typeof update === 'function') {
 		callback = update;
 		update = false;
@@ -275,19 +275,22 @@ gcsimage.prototype.uploadFile = function (item, file, update, callback) {
 		}).then(function (apiResponse) {
 				// resizing image and upload resized images
 			if (typeof _this.options.resize === 'function') {
-				var resizeFunc = _this.options.resize;
+        var resizeFunc = _this.options.resize;
 				if (Array.isArray(_this.options.resizeOpts) && _this.options.resizeOpts.length > 0) {
-					var promises = [];
+          var promises = [];
 					var targets = {};
-					var resizeOpts = _this.options.resizeOpts;
+          var resizeOpts = _this.options.resizeOpts;
+          
 					for (var i = 0; i < resizeOpts.length; i++) {
-						var resizeOpt = resizeOpts[i] || {};
+            var resizeOpt = resizeOpts[i] || {};
+            var options = _.get(resizeOpt, [ 'options' ], {});
+            options.isWatermarked = isWatermarked;
 						targets[resizeOpt.target] = {
 							url: gcsHelper.getPublicUrl(_this.options.bucket, gcsDir + filenameWithoutExt + '-' + resizeOpt.target + '.' + ext),
 							width: resizeOpt.width,
 							height: resizeOpt.height,
 						};
-						promises.push(gcsHelper.uploadFileToBucket(bucket, resizeFunc(file.path, resizeOpt.width, resizeOpt.height, resizeOpt.options), {
+						promises.push(gcsHelper.uploadFileToBucket(bucket, resizeFunc(file.path, resizeOpt.width, resizeOpt.height, options), {
 							destination: gcsDir + filenameWithoutExt + '-' + resizeOpt.target + '.' + ext,
 							filetype: filetype,
 							isPublicRead: isPublicRead,
@@ -418,16 +421,17 @@ gcsimage.prototype.getRequestHandler = function (item, req, paths, callback) {
 		}
 
 		if (req.files && req.files[paths.upload] && req.files[paths.upload].size) {
+      var isWatermarked = _.get(req.body, [ 'watermark' ], false)
 			var imageDelete;
 			if (_this.options.autoCleanup && item.get(_this.paths.exists)) {
 					// capture image delete promise
 				imageDelete = _this.apply(item, 'delete');
-			}
+      }
 			if (typeof imageDelete === 'undefined') {
-				_this.uploadFile(item, req.files[paths.upload], true, callback);
+				_this.uploadFile(item, req.files[paths.upload], isWatermarked, true, callback);
 			} else {
 				imageDelete.then(function (result) {
-					_this.uploadFile(item, req.files[paths.upload], true, callback);
+					_this.uploadFile(item, req.files[paths.upload], isWatermarked, true, callback);
 				}, function (err) {
 					callback(err);
 				});
