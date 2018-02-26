@@ -324,7 +324,7 @@ module.exports = Field.create({
 						{this.hasImage() ? 'Change' : 'Upload'} Image
 					</Button>
           {this.hasImage() && this.renderClearButton()}
-          {this.hasImage() && this.state.isFilechanged && false && isWatermarked}
+          {this.hasImage() && this.state.isFilechanged && isWatermarked}
 				</div>
 				{this.props.select && this.renderImageSelect()}
 			</div>
